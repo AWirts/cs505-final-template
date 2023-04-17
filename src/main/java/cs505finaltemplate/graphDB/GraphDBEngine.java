@@ -12,6 +12,8 @@ import com.orientechnologies.orient.core.record.OVertex;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 
+import java.util.List;
+
 public class GraphDBEngine {
 
 
@@ -57,6 +59,12 @@ public class GraphDBEngine {
         if (patient.getProperty("patient_status") == null) {
             patient.createProperty("patient_status", OType.INTEGER);
         }
+        if (patient.getProperty("contact_list") == null) {
+            patient.createProperty("contact_list", OType.EMBEDDEDLIST);
+        }
+        if (patient.getProperty("event_list") == null) {
+            patient.createProperty("event_list", OType.EMBEDDEDLIST);
+        }
 
 	if (db.getClass("contact_with") == null) {
             db.createEdgeClass("contact_with");
@@ -88,7 +96,7 @@ public class GraphDBEngine {
     }
 
     //public OVertex createPatient(ODatabaseSession db, String patient_mrn, int hospital_status, int vax_status) {
-    public OVertex createPatient(String patient_mrn, int hospital_status, int vax_status, int testing_id, String patient_name,int patient_zipcode,int patient_status) {    
+    public OVertex createPatient(String patient_mrn, int hospital_status, int vax_status, int testing_id, String patient_name,int patient_zipcode,int patient_status, List<String> contact_list, List<String> event_list) {    
     	OVertex result = db.newVertex("patient");
         result.setProperty("patient_mrn", patient_mrn);
 	    result.setProperty("hospital_status", hospital_status);
@@ -97,6 +105,19 @@ public class GraphDBEngine {
         result.setProperty("patient_name", patient_name);
         result.setProperty("patient_zipcode", patient_zipcode);
         result.setProperty("patient_status", patient_status);
+        result.setProperty("contact_list", contact_list);
+        result.setProperty("event_list", event_list);
+        for(String contact : contact_list){
+            String query = "TRAVERSE inE(), outE(), inV(), outV() " +
+                "FROM (select from patient where patient_mrn = ?) " +
+                "WHILE $depth <= 2";
+            OResultSet rs = db.query(query, contact);
+            while (rs.hasNext()) {
+                rs.next().getVertex().ifPresent(x->{
+                  result.addEdge(x, "contact_with");
+                  });
+            }
+        }
         result.save();
         return result;
     }

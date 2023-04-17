@@ -106,7 +106,7 @@ public class TopicConnector {
             List<TestingData> incomingList = gson.fromJson(message, typeListTestingData);
 
             for (TestingData testingData : incomingList) {	
-		        OVertex patient = Launcher.graphDBEngine.createPatient(testingData.patient_mrn, -1, -1,testingData.testing_id,testingData.patient_name,testingData.patient_zipcode,testingData.patient_status);
+		        OVertex patient = Launcher.graphDBEngine.createPatient(testingData.patient_mrn, -1, -1,testingData.testing_id,testingData.patient_name,testingData.patient_zipcode,testingData.patient_status,testingData.contact_list,testingData.event_list);
                 //for(String contact : testingData.contact_list){
                 //OVertex c = Launcher.graphDBEngine.createPatient(contact, -1, -1);
                 
