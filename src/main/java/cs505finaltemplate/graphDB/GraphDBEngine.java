@@ -66,8 +66,11 @@ public class GraphDBEngine {
             patient.createProperty("event_list", OType.EMBEDDEDLIST);
         }
 
-	if (db.getClass("contact_with") == null) {
-            db.createEdgeClass("contact_with");
+        if (db.getClass("contact_with") == null) {
+                db.createEdgeClass("contact_with");
+            }
+        if (db.getClass("event_with") == null) {
+            db.createEdgeClass("event_with");
         }
 
 
@@ -87,6 +90,21 @@ public class GraphDBEngine {
         }
         if (hospital.getProperty("patient_status") == null) {
             hospital.createProperty("patient_status", OType.INTEGER);
+        }
+
+        OClass vax = db.getClass("vax");
+ 
+        if (vax == null) {
+            vax = db.createVertexClass("vax");
+        }
+        if (vax.getProperty("vaccination_id") == null) {
+            vax.createProperty("vaccination_id", OType.INTEGER);
+        }
+        if (vax.getProperty("patient_name") == null) {
+            vax.createProperty("patient_name", OType.STRING);
+        }
+        if (vax.getProperty("patient_mrn") == null) {
+            vax.createProperty("patient_mrn", OType.STRING);
         }
     }
 
@@ -120,6 +138,19 @@ public class GraphDBEngine {
             }
             rs.close();
         }
+        for(String event : event_list){
+            String query = "TRAVERSE inE(), outE(), inV(), outV() " +
+                "FROM (select from patient where event_list contains ?) " +
+                "WHILE $depth <= 2";
+            OResultSet rs = db.query(query, event);
+            while (rs.hasNext()) {
+                rs.next().getVertex().ifPresent(x->{
+                    System.out.println(event);
+                  result.addEdge(x, "event_with");
+                  });
+            }
+            rs.close();
+        }
         result.save();
         return result;
     }
@@ -133,6 +164,7 @@ public class GraphDBEngine {
         result.save();
         return result;
     }
+
     public OVertex createVax(int vaccination_id, String patient_name, String patient_mrn){
         OVertex result = db.newVertex("vax");
         result.setProperty("vaccination_id", vaccination_id);
@@ -141,6 +173,7 @@ public class GraphDBEngine {
         result.save();
         return result;
     } 
+
     private void getContacts(ODatabaseSession db, String patient_mrn) {
 
         String query = "TRAVERSE inE(), outE(), inV(), outV() " +

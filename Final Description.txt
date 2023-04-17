@@ -22,6 +22,10 @@ Finished (Tentative):
 		patient vertex
 		patient upload to database
 		patient contact edge probably
+		event vertex
+		event upload to databse
+		hospital vertex
+		hospital upload to databse
 	
 Need Finishing:
 	API calls: (in file API.java)
@@ -31,10 +35,6 @@ Need Finishing:
 		/getpatientstatus/
 		
 	Graph Database: (in files GraphDBEngine.java and TopicConnector.java)
-		event vertex
-		event upload to databse
-		hospital vertex
-		hospital upload to databse
 		
 		patient event edge
 		patient hospital edge
