@@ -61,9 +61,31 @@ public class TopicConnector {
 }
 
     private void patientListChannel(Channel channel) {
+
+        
+    //"Example JSON:
+
+    //[{
+
+    //  "testing_id": 001,
+
+    //  "patient_name": "John Prine",
+
+    //  "patient_mrn": "024c60d2-a1eb",
+
+    //  "patient_zipcode": 40351,
+    //  "patient_status": 1,
+
+     
+
+    //  "contact_list": ["498d-8739", "0d2-a1eb-498"],
+    //  "event_list": ["234fs-3493", "fsf545-dfs54"]
+
+    //}]
+
         try {
 	    
-	    System.out.println("Creating patient_list channel");
+	        System.out.println("Creating patient_list channel");
 
             String topicName = "patient_list";
 
@@ -77,43 +99,43 @@ public class TopicConnector {
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
 
-                String message = new String(delivery.getBody(), "UTF-8");
+            String message = new String(delivery.getBody(), "UTF-8");
 
-		Launcher.graphDBEngine.db.activateOnCurrentThread();
+		    Launcher.graphDBEngine.db.activateOnCurrentThread();
 
-                List<TestingData> incomingList = gson.fromJson(message, typeListTestingData);
-                for (TestingData testingData : incomingList) {	
+            List<TestingData> incomingList = gson.fromJson(message, typeListTestingData);
 
-		    OVertex patient = Launcher.graphDBEngine.createPatient(testingData.patient_mrn, -1, -1);
-		    //for(String contact : testingData.contact_list){
-			//OVertex c = Launcher.graphDBEngine.createPatient(contact, -1, -1);
-			
-			//OEdge cEdge = patient.addEdge(c, "contact_with");
-			//cEdge.save();
-		    //}
+            for (TestingData testingData : incomingList) {	
+		        OVertex patient = Launcher.graphDBEngine.createPatient(testingData.patient_mrn, -1, -1,testingData.testing_id,testingData.patient_name,testingData.patient_zipcode,testingData.patient_status);
+                //for(String contact : testingData.contact_list){
+                //OVertex c = Launcher.graphDBEngine.createPatient(contact, -1, -1);
+                
+                //OEdge cEdge = patient.addEdge(c, "contact_with");
+                //cEdge.save();
+                //}
 
 		    if(testingData.patient_status == 1) {
 			//Data to send to CEP
-			Map<String,String> zip_entry = new HashMap<>();
-                    	zip_entry.put("zip_code",String.valueOf(testingData.patient_zipcode));
-                    	String testInput = gson.toJson(zip_entry);
-                    	//uncomment for debug
-                    	//System.out.println("testInput: " + testInput);
+			    Map<String,String> zip_entry = new HashMap<>();
+                zip_entry.put("zip_code",String.valueOf(testingData.patient_zipcode));
+                String testInput = gson.toJson(zip_entry);
+                //uncomment for debug
+                //System.out.println("testInput: " + testInput);
 
-                    	//insert into CEP
-                    	Launcher.cepEngine.input("testInStream",testInput);
+                //insert into CEP
+                Launcher.cepEngine.input("testInStream",testInput);
 
-                    	//do something else with each record
-                    	/*
-                    	System.out.println("*Java Class*");
-                    	System.out.println("\ttesting_id = " + testingData.testing_id);
-                    	System.out.println("\tpatient_name = " + testingData.patient_name);
-                    	System.out.println("\tpatient_mrn = " + testingData.patient_mrn);
-                    	System.out.println("\tpatient_zipcode = " + testingData.patient_zipcode);
-                    	System.out.println("\tpatient_status = " + testingData.patient_status);
-                    	System.out.println("\tcontact_list = " + testingData.contact_list);
-               	     	System.out.println("\tevent_list = " + testingData.event_list);
-                    	 */
+                //do something else with each record
+                /*
+                System.out.println("*Java Class*");
+                System.out.println("\ttesting_id = " + testingData.testing_id);
+                System.out.println("\tpatient_name = " + testingData.patient_name);
+                System.out.println("\tpatient_mrn = " + testingData.patient_mrn);
+                System.out.println("\tpatient_zipcode = " + testingData.patient_zipcode);
+                System.out.println("\tpatient_status = " + testingData.patient_status);
+                System.out.println("\tcontact_list = " + testingData.contact_list);
+                System.out.println("\tevent_list = " + testingData.event_list);
+                    */
 		    }
                 }
 

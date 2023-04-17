@@ -62,8 +62,10 @@ public class API {
     @Produces(MediaType.APPLICATION_JSON)
     public Response reset() {
         String responseString = "{}";
+
         try {
-            int resetStatusCode = Launcher.reset();
+            //int resetStatusCode = Launcher.reset();
+            int resetStatusCode = 1;
             Map<String,Integer> responseMap = new HashMap<>();
             responseMap.put("reset_status_code", resetStatusCode);
             responseString = gson.toJson(responseMap);

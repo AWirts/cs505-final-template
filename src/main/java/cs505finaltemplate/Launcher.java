@@ -102,9 +102,8 @@ public class Launcher {
     }
 
     public static int reset() {
-        graphDBEngine.endDB();
-        graphDBEngine = new GraphDBEngine();
-	    graphDBEngine.startDB();
+        graphDBEngine.db.activateOnCurrentThread();
+        graphDBEngine.startDB();
         return 1;
     }
 

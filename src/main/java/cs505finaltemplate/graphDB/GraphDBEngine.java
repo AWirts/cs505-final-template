@@ -4,6 +4,7 @@ import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.ODatabaseType;
 import com.orientechnologies.orient.core.db.OrientDB;
 import com.orientechnologies.orient.core.db.OrientDBConfig;
+
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.OEdge;
@@ -15,7 +16,7 @@ public class GraphDBEngine {
 
 
 	public static OrientDB orient = new OrientDB("remote:localhost", OrientDBConfig.defaultConfig());
-        public static ODatabaseSession db = orient.open("test", "root", "rootpwd");
+    public static ODatabaseSession db = orient.open("test", "root", "rootpwd");
 
     //!!! CODE HERE IS FOR EXAMPLE ONLY, YOU MUST CHECK AND MODIFY!!!
     public GraphDBEngine() {}
@@ -43,6 +44,18 @@ public class GraphDBEngine {
 
         if (patient.getProperty("vax_status") == null) {
             patient.createProperty("vax_status", OType.INTEGER);
+        }
+        if (patient.getProperty("testing_id") == null) {
+            patient.createProperty("testing_id", OType.INTEGER);
+        }
+        if (patient.getProperty("patient_name") == null) {
+            patient.createProperty("patient_name", OType.STRING);
+        }
+        if (patient.getProperty("patient_zipcode") == null) {
+            patient.createProperty("patient_zipcode", OType.INTEGER);
+        }
+        if (patient.getProperty("patient_status") == null) {
+            patient.createProperty("patient_status", OType.INTEGER);
         }
 
 	if (db.getClass("contact_with") == null) {
@@ -75,11 +88,15 @@ public class GraphDBEngine {
     }
 
     //public OVertex createPatient(ODatabaseSession db, String patient_mrn, int hospital_status, int vax_status) {
-    public OVertex createPatient(String patient_mrn, int hospital_status, int vax_status) {    
+    public OVertex createPatient(String patient_mrn, int hospital_status, int vax_status, int testing_id, String patient_name,int patient_zipcode,int patient_status) {    
     	OVertex result = db.newVertex("patient");
         result.setProperty("patient_mrn", patient_mrn);
 	    result.setProperty("hospital_status", hospital_status);
 	    result.setProperty("vax_status", vax_status);
+        result.setProperty("testing_id", testing_id);
+        result.setProperty("patient_name", patient_name);
+        result.setProperty("patient_zipcode", patient_zipcode);
+        result.setProperty("patient_status", patient_status);
         result.save();
         return result;
     }
@@ -105,5 +122,12 @@ public class GraphDBEngine {
         db.command(query);
 
     }
+
+    public int resetDB() {
+        
+      return 1;
+    }
+    
+
 
 }
