@@ -27,8 +27,8 @@ public class GraphDBEngine {
 	clearDB(db);
 
         //create classes
-        OClass patient = db.getClass("patient");
-
+       OClass patient = db.getClass("patient");
+ 
         if (patient == null) {
             patient = db.createVertexClass("patient");
         }
@@ -69,25 +69,25 @@ public class GraphDBEngine {
 	if (db.getClass("contact_with") == null) {
             db.createEdgeClass("contact_with");
         }
-	/*
-	OVertex patient_0 = createPatient("mrn_0", -1, -1);
-        OVertex patient_1 = createPatient("mrn_1", -1, -1);
-        OVertex patient_2 = createPatient("mrn_2", -1, -1);
-        OVertex patient_3 = createPatient("mrn_3", -1, -1);
 
-        //patient 0 in contact with patient 1
-        OEdge edge1 = patient_0.addEdge(patient_1, "contact_with");
-        edge1.save();
-        //patient 2 in contact with patient 0
-        OEdge edge2 = patient_2.addEdge(patient_0, "contact_with");
-        edge2.save();
 
-        //you should not see patient_3 when trying to find contacts of patient 0
-        OEdge edge3 = patient_3.addEdge(patient_2, "contact_with");
-        edge3.save();
-
-        getContacts(db, "mrn_0");
-	*/
+        OClass hospital = db.getClass("hospital");
+ 
+        if (hospital == null) {
+            hospital = db.createVertexClass("hospital");
+        }
+        if (hospital.getProperty("hospital_id") == null) {
+            hospital.createProperty("hospital_id", OType.INTEGER);
+        }
+        if (hospital.getProperty("patient_name") == null) {
+            hospital.createProperty("patient_name", OType.STRING);
+        }
+        if (hospital.getProperty("patient_mrn") == null) {
+            hospital.createProperty("patient_mrn", OType.STRING);
+        }
+        if (hospital.getProperty("patient_status") == null) {
+            hospital.createProperty("patient_status", OType.INTEGER);
+        }
     }
 
     public void endDB(){
@@ -114,14 +114,33 @@ public class GraphDBEngine {
             OResultSet rs = db.query(query, contact);
             while (rs.hasNext()) {
                 rs.next().getVertex().ifPresent(x->{
+                    System.out.println(contact);
                   result.addEdge(x, "contact_with");
                   });
             }
+            rs.close();
         }
         result.save();
         return result;
     }
 
+    public OVertex createHospital(int hospital_id, String patient_name, String patient_mrn, int patient_status){
+        OVertex result = db.newVertex("hospital");
+        result.setProperty("hospital_id", hospital_id);
+        result.setProperty("patient_name", patient_name);
+        result.setProperty("patient_mrn", patient_mrn);
+        result.setProperty("patient_status", patient_status);
+        result.save();
+        return result;
+    }
+    public OVertex createVax(int vaccination_id, String patient_name, String patient_mrn){
+        OVertex result = db.newVertex("vax");
+        result.setProperty("vaccination_id", vaccination_id);
+        result.setProperty("patient_name", patient_name);
+        result.setProperty("patient_mrn", patient_mrn);
+        result.save();
+        return result;
+    } 
     private void getContacts(ODatabaseSession db, String patient_mrn) {
 
         String query = "TRAVERSE inE(), outE(), inV(), outV() " +
@@ -143,12 +162,5 @@ public class GraphDBEngine {
         db.command(query);
 
     }
-
-    public int resetDB() {
-        
-      return 1;
-    }
-    
-
 
 }

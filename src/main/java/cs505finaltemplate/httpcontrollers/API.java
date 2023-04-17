@@ -64,8 +64,7 @@ public class API {
         String responseString = "{}";
 
         try {
-            //int resetStatusCode = Launcher.reset();
-            int resetStatusCode = 1;
+            int resetStatusCode = Launcher.reset();
             Map<String,Integer> responseMap = new HashMap<>();
             responseMap.put("reset_status_code", resetStatusCode);
             responseString = gson.toJson(responseMap);

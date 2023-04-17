@@ -171,11 +171,13 @@ public class TopicConnector {
 
                 //convert string to class
                 List<Map<String,String>> incomingList = gson.fromJson(message, typeOfListMap);
+                Launcher.graphDBEngine.db.activateOnCurrentThread();
                 for (Map<String,String> hospitalData : incomingList) {
                     int hospital_id = Integer.parseInt(hospitalData.get("hospital_id"));
                     String patient_name = hospitalData.get("patient_name");
                     String patient_mrn = hospitalData.get("patient_mrn");
                     int patient_status = Integer.parseInt(hospitalData.get("patient_status"));
+                    OVertex hospital = Launcher.graphDBEngine.createHospital(hospital_id, patient_name, patient_mrn, patient_status);
                     //do something with each each record.
                 }
 
@@ -210,11 +212,13 @@ public class TopicConnector {
                 String message = new String(delivery.getBody(), "UTF-8");
 
                 //convert string to class
+                Launcher.graphDBEngine.db.activateOnCurrentThread();
                 List<Map<String,String>> incomingList = gson.fromJson(message, typeOfListMap);
                 for (Map<String,String> vaxData : incomingList) {
                     int vaccination_id = Integer.parseInt(vaxData.get("vaccination_id"));
                     String patient_name = vaxData.get("patient_name");
                     String patient_mrn = vaxData.get("patient_mrn");
+                    OVertex vax = Launcher.graphDBEngine.createVax(vaccination_id, patient_name, patient_mrn);
                     //do something with each each record.
                 }
 

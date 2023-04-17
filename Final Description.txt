@@ -13,17 +13,18 @@ Finished (Tentative):
 		/getteam made
 		/zipalertlist made
 		/alertlist made
+		/reset made
 	CEP:
 		all done
 	Graph Database:
 		server start
 		database create
 		patient vertex
-		patient upload to databse
+		patient upload to database
+		patient contact edge probably
 	
 Need Finishing:
 	API calls: (in file API.java)
-		/reset
 		/getconfirmedcontacts/{mrn}
 		/getpossiblecontacts/{mrn}
 		/getpatientstatus/{hospital_id}
@@ -35,7 +36,6 @@ Need Finishing:
 		hospital vertex
 		hospital upload to databse
 		
-		patient contact edge
 		patient event edge
 		patient hospital edge
 
