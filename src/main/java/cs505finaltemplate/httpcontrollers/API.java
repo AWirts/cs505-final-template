@@ -63,10 +63,9 @@ public class API {
     public Response reset() {
         String responseString = "{}";
         try {
-
+            int resetStatusCode = Launcher.reset();
             Map<String,Integer> responseMap = new HashMap<>();
-            responseMap.put("reset_status_code", 1);
-
+            responseMap.put("reset_status_code", resetStatusCode);
             responseString = gson.toJson(responseMap);
 
         } catch (Exception ex) {
@@ -152,4 +151,29 @@ public class API {
         }
         return Response.ok(responseString).header("Access-Control-Allow-Origin", "*").build();
     }
+
+    @GET
+    @Path("/getconfirmedcontacts")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getconfirmedcontacts() {
+        String responseString = "{}";
+        try {
+
+            //generate a response
+            Map<String,Integer> responseMap = new HashMap<>();
+            responseMap.put("contactlist",0);
+            responseString = gson.toJson(responseMap);
+
+        } catch (Exception ex) {
+
+            StringWriter sw = new StringWriter();
+            ex.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            ex.printStackTrace();
+
+            return Response.status(500).entity(exceptionAsString).build();
+        }
+        return Response.ok(responseString).header("Access-Control-Allow-Origin", "*").build();
+    }
+
 }

@@ -78,8 +78,8 @@ public class GraphDBEngine {
     public OVertex createPatient(String patient_mrn, int hospital_status, int vax_status) {    
     	OVertex result = db.newVertex("patient");
         result.setProperty("patient_mrn", patient_mrn);
-	result.setProperty("hospital_status", hospital_status);
-	result.setProperty("vax_status", vax_status);
+	    result.setProperty("hospital_status", hospital_status);
+	    result.setProperty("vax_status", vax_status);
         result.save();
         return result;
     }
