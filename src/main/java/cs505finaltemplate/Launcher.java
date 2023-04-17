@@ -1,5 +1,4 @@
 package cs505finaltemplate;
-
 import cs505finaltemplate.CEP.CEPEngine;
 import cs505finaltemplate.Topics.TopicConnector;
 import cs505finaltemplate.graphDB.GraphDBEngine;
