@@ -26,6 +26,7 @@ Finished (Tentative):
 		event upload to databse
 		hospital vertex
 		hospital upload to databse
+		patient event edge
 	
 Need Finishing:
 	API calls: (in file API.java)
@@ -36,7 +37,6 @@ Need Finishing:
 		
 	Graph Database: (in files GraphDBEngine.java and TopicConnector.java)
 		
-		patient event edge
 		patient hospital edge
 
 Before Running Program:

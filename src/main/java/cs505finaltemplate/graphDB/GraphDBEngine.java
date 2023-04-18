@@ -12,6 +12,7 @@ import com.orientechnologies.orient.core.record.OVertex;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GraphDBEngine {
@@ -132,7 +133,6 @@ public class GraphDBEngine {
             OResultSet rs = db.query(query, contact);
             while (rs.hasNext()) {
                 rs.next().getVertex().ifPresent(x->{
-                    System.out.println(contact);
                   result.addEdge(x, "contact_with");
                   });
             }
@@ -145,7 +145,6 @@ public class GraphDBEngine {
             OResultSet rs = db.query(query, event);
             while (rs.hasNext()) {
                 rs.next().getVertex().ifPresent(x->{
-                    System.out.println(event);
                   result.addEdge(x, "event_with");
                   });
             }
@@ -194,6 +193,21 @@ public class GraphDBEngine {
         String query = "DELETE VERTEX FROM patient";
         db.command(query);
 
+    }
+
+    public List<String> getcontactlist(String mrn){
+        String query = "TRAVERSE inE(), outE(), inV(), outV() " +
+                "FROM (select contact_list from patient where patient_mrn = ?) " +
+                "WHILE $depth <= 2";
+            OResultSet rs = db.query(query, mrn);
+            List<String> contactlist = new ArrayList<String>();
+            while (rs.hasNext()) {
+                OResult item = rs.next();
+                contactlist.add(item.toString());
+                
+              }
+            rs.close();
+            return contactlist;
     }
 
 }

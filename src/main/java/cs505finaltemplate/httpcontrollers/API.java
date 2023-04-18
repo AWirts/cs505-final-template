@@ -153,5 +153,30 @@ public class API {
         return Response.ok(responseString).header("Access-Control-Allow-Origin", "*").build();
     }
 
+    @GET
+    @Path("getconfirmedcontacts/{mrn}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getconfirmedcontacts(String mrn) {
+        String responseString = "{}";
+        try {
+
+            //generate a response
+            List<String> contactlist = Launcher.getcontactlist(mrn);
+            Map<String,List<String>> responseMap = new HashMap<>();
+            responseMap.put("contactlist",contactlist);
+            responseString = gson.toJson(responseMap);
+
+        } catch (Exception ex) {
+
+            StringWriter sw = new StringWriter();
+            ex.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            ex.printStackTrace();
+
+            return Response.status(500).entity(exceptionAsString).build();
+        }
+        return Response.ok(responseString).header("Access-Control-Allow-Origin", "*").build();
+    }
+
 
 }
