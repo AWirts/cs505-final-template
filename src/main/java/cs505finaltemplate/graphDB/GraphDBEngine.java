@@ -202,7 +202,7 @@ public class GraphDBEngine {
             String[] events = eventstring.split(",");
             contactlist = loopevents(events);
         }
-
+        System.out.println("poss:" + contactlist);
         rs.close(); //REMEMBER TO ALWAYS CLOSE THE RESULT SET!!!
         System.out.println("final:" + contactlist);
         return contactlist;
@@ -219,15 +219,17 @@ public class GraphDBEngine {
             }
         }
         rs.close(); //REMEMBER TO ALWAYS CLOSE THE RESULT SET!!!
+        System.out.println("with:" + patient_list);
         return patient_list;
     } 
-    
+
     private Map<String,List<String>> loopevents(String[] events){
         Map<String,List<String>> contactlist = new HashMap<>();
         int i=0;
             while(i < events.length ){
                 List<String> patient_list = new ArrayList<String>();
                 patient_list = geteventwith(events[i]);
+                System.out.println("loop:" + patient_list);
                 if(!patient_list.isEmpty()){ 
                     contactlist.put(events[i],patient_list);
                 }
