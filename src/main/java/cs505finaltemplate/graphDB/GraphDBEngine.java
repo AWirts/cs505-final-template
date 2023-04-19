@@ -193,48 +193,40 @@ public class GraphDBEngine {
         return contactlist;
     } 
     public Map<String,List<String>> getpossiblecontactlist(String mrn){
-        String query = "select event_list from patient where patient_mrn = ?";
+        String query = "TRAVERSE inE('event_with'), outE('event_with'), inV(), outV() FROM (select from patient where event_list contains ?) WHILE $depth <= 2";
+        String query2 = "select event_list from patient where patient_mrn = ?";
         Map<String,List<String>> contactlist = new HashMap<>();
-        OResultSet rs = db.query(query, mrn);
-        while (rs.hasNext()) {
-            OResult item = rs.next();
-            String eventstring = item.getProperty("event_list").toString().replaceAll("\\s+", "").replace("[", "").replace("]","");
+        
+        OResultSet rs2 = db.query(query2, mrn);
+        while (rs2.hasNext()) {
+            OResult item2 = rs2.next();
+            String eventstring = item2.getProperty("event_list").toString().replaceAll("\\s+", "").replace("[", "").replace("]","");
             String[] events = eventstring.split(",");
-            contactlist = loopevents(events);
+            int i=0;
+            while(i < events.length ){
+                List<String> patient_list = new ArrayList<String>();
+                OResultSet rs = db.query(query,events[i]);
+                while (rs.hasNext()) {
+                    OResult item = rs.next();
+                    if(!item.isEdge()){
+                    patient_list.add(item.getProperty("patient_mrn").toString());
+                    }
+                }
+                if(!patient_list.isEmpty()){ 
+                    contactlist.put(events[i],patient_list);
+                    System.out.println(contactlist);
+                }
+                rs.close();
+                i++;
+            }
+            
         }
-        System.out.println("poss:" + contactlist);
-        rs.close(); //REMEMBER TO ALWAYS CLOSE THE RESULT SET!!!
+
+        rs2.close(); //REMEMBER TO ALWAYS CLOSE THE RESULT SET!!!
         System.out.println("final:" + contactlist);
         return contactlist;
     } 
     
-    private List<String> geteventwith(String event){
-        String query = "TRAVERSE inE('event_with'), outE('event_with'), inV(), outV() FROM (select from patient where event_list contains ?) WHILE $depth <= 2";
-        List<String> patient_list = new ArrayList<String>();
-        OResultSet rs = db.query(query,event);
-        while (rs.hasNext()) {
-            OResult item = rs.next();
-            if(!item.isEdge()){
-            patient_list.add(item.getProperty("patient_mrn").toString());
-            }
-        }
-        rs.close(); //REMEMBER TO ALWAYS CLOSE THE RESULT SET!!!
-        System.out.println("with:" + patient_list);
-        return patient_list;
-    } 
+    
 
-    private Map<String,List<String>> loopevents(String[] events){
-        Map<String,List<String>> contactlist = new HashMap<>();
-        int i=0;
-            while(i < events.length ){
-                List<String> patient_list = new ArrayList<String>();
-                patient_list = geteventwith(events[i]);
-                System.out.println("loop:" + patient_list);
-                if(!patient_list.isEmpty()){ 
-                    contactlist.put(events[i],patient_list);
-                }
-                i++;
-            }
-            return contactlist;
-    }
 }
