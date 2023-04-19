@@ -190,20 +190,21 @@ public class GraphDBEngine {
         }
 
         rs.close(); //REMEMBER TO ALWAYS CLOSE THE RESULT SET!!!
-        System.out.println(contactlist);
         return contactlist;
     } 
     public Map<String,List<String>> getpossiblecontactlist(String mrn){
         String query = "TRAVERSE inE('event_with'), outE('event_with'), inV(), outV() FROM (select from patient where event_list contains ?) WHILE $depth <= 2";
         String query2 = "select event_list from patient where patient_mrn = ?";
         Map<String,List<String>> contactlist = new HashMap<>();
-        List<String> patient_list = new ArrayList<String>();
+        
         OResultSet rs2 = db.query(query2, mrn);
         while (rs2.hasNext()) {
             OResult item2 = rs2.next();
             String eventstring = item2.getProperty("event_list").toString().replaceAll("\\s+", "").replace("[", "").replace("]","");
             String[] events = eventstring.split(",");
-            for(int i=0;i<events.length;i++){
+            int i=0;
+            while(i < events.length ){
+                List<String> patient_list = new ArrayList<String>();
                 OResultSet rs = db.query(query,events[i]);
                 while (rs.hasNext()) {
                     OResult item = rs.next();
@@ -211,17 +212,32 @@ public class GraphDBEngine {
                     patient_list.add(item.getProperty("patient_mrn").toString());
                     }
                 }
-                contactlist.put(events[i],patient_list);
-                patient_list.clear();
+                if(!patient_list.isEmpty()){ 
+                    contactlist.put(events[i],patient_list);
+                }
                 rs.close();
+                i++;
             }
         }
 
         rs2.close(); //REMEMBER TO ALWAYS CLOSE THE RESULT SET!!!
-        System.out.println(contactlist);
+        System.out.println("final:" + contactlist);
         return contactlist;
     } 
+    
+    public List<String> geteventlist(String mrn){
+        String query = "TRAVERSE inE('event_with'), outE('event_with'), inV(), outV() FROM (select from patient where event_list contains ?) WHILE $depth <= 2";
+        OResultSet rs = db.query(query, mrn);
+        List<String> contactlist = new ArrayList<String>();
+        while (rs.hasNext()) {
+            OResult item = rs.next();
+            if(!item.isEdge()){
+            contactlist.add(item.getProperty("patient_mrn").toString());
+            }
+        }
 
-   
+        rs.close(); //REMEMBER TO ALWAYS CLOSE THE RESULT SET!!!
+        return contactlist;
+    } 
 
 }
