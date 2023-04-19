@@ -180,7 +180,7 @@ public class API {
         }
         return Response.ok(responseString).header("Access-Control-Allow-Origin", "*").build();
     }
-/* 
+ 
     @GET
     @Path("/getpossiblecontacts/{mvn}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -189,8 +189,7 @@ public class API {
         try {
 
             //generate a response
-            Map<String,List<String>> eventMap = new HashMap<>();
-            List<String> contactlist = new ArrayList<String>();
+            Map<String,List<String>> contactlist = new HashMap<>();
             contactlist = Launcher.getpossiblecontactlist(mrn);
             System.out.println(contactlist);
             Map<String,Map<String,List<String>>> responseMap = new HashMap<>();
@@ -207,6 +206,6 @@ public class API {
             return Response.status(500).entity(exceptionAsString).build();
         }
         return Response.ok(responseString).header("Access-Control-Allow-Origin", "*").build();
-    } */
+    } 
 
 }

@@ -14,7 +14,8 @@ import com.orientechnologies.orient.core.sql.executor.OResultSet;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.HashMap;
+import java.util.Map;
 public class GraphDBEngine {
 
 
@@ -169,21 +170,7 @@ public class GraphDBEngine {
         return result;
     } 
 
-    private void getContacts(ODatabaseSession db, String patient_mrn) {
-
-        String query = "TRAVERSE inE(), outE(), inV(), outV() " +
-                "FROM (select from patient where patient_mrn = ?) " +
-                "WHILE $depth <= 2";
-        OResultSet rs = db.query(query, patient_mrn);
-
-        while (rs.hasNext()) {
-            OResult item = rs.next();
-            System.out.println("contact: " + item.getProperty("patient_mrn"));
-        }
-
-        rs.close(); //REMEMBER TO ALWAYS CLOSE THE RESULT SET!!!
-    }
-
+    
     private void clearDB(ODatabaseSession db) {
 
         String query = "DELETE VERTEX FROM patient";
@@ -197,31 +184,44 @@ public class GraphDBEngine {
         List<String> contactlist = new ArrayList<String>();
         while (rs.hasNext()) {
             OResult item = rs.next();
+            if(!item.isEdge()){
             contactlist.add(item.getProperty("patient_mrn").toString());
+            }
         }
 
         rs.close(); //REMEMBER TO ALWAYS CLOSE THE RESULT SET!!!
+        System.out.println(contactlist);
+        return contactlist;
+    } 
+    public Map<String,List<String>> getpossiblecontactlist(String mrn){
+        String query = "TRAVERSE inE('event_with'), outE('event_with'), inV(), outV() FROM (select from patient where event_list contains ?) WHILE $depth <= 2";
+        String query2 = "select event_list from patient where patient_mrn = ?";
+        Map<String,List<String>> contactlist = new HashMap<>();
+        List<String> patient_list = new ArrayList<String>();
+        OResultSet rs2 = db.query(query2, mrn);
+        while (rs2.hasNext()) {
+            OResult item2 = rs2.next();
+            String eventstring = item2.getProperty("event_list").toString().replaceAll("\\s+", "").replace("[", "").replace("]","");
+            String[] events = eventstring.split(",");
+            for(int i=0;i<events.length;i++){
+                OResultSet rs = db.query(query,events[i]);
+                while (rs.hasNext()) {
+                    OResult item = rs.next();
+                    if(!item.isEdge()){
+                    patient_list.add(item.getProperty("patient_mrn").toString());
+                    }
+                }
+                contactlist.put(events[i],patient_list);
+                patient_list.clear();
+                rs.close();
+            }
+        }
+
+        rs2.close(); //REMEMBER TO ALWAYS CLOSE THE RESULT SET!!!
+        System.out.println(contactlist);
         return contactlist;
     } 
 
-   /*  public List<String> getcontactlist(String mrn){
-        String query = "select contact_list from patient where patient_mrn = ?";
-            OResultSet rs = db.query(query, mrn);
-            List<String> contactlist = new ArrayList<String>();
-            String q = "";
-            while (rs.hasNext()) {
-                OResult item = rs.next();
-                //String contact = item.getProperty("contact_list").toString().replaceAll("\\s+", "");
-                //contactlist.add(contact);
-                q=item.getProperty("contact_list").toString().replaceAll("\\s+", "").replace("[", "").replace("]","");
-                
-              }
-            rs.close();
-            String[] test = q.split(",");
-            for(int i=0;i<test.length;i++){
-                contactlist.add(test[i]);
-            }
-            return contactlist;
-    } */
+   
 
 }

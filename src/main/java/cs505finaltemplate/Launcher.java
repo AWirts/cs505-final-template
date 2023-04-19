@@ -113,5 +113,11 @@ public class Launcher {
         contactlist = graphDBEngine.getcontactlist(mrn);
         return contactlist;
     }
+    public static Map<String,List<String>> getpossiblecontactlist(String mrn){
+        Map<String,List<String>> contactlist = new HashMap<>();
+        graphDBEngine.db.activateOnCurrentThread();
+        contactlist = graphDBEngine.getpossiblecontactlist(mrn);
+        return contactlist;
+    }
 
 }
