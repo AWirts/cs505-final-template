@@ -196,14 +196,12 @@ public class GraphDBEngine {
     }
 
     public List<String> getcontactlist(String mrn){
-        String query = "TRAVERSE inE(), outE(), inV(), outV() " +
-                "FROM (select contact_list from patient where patient_mrn = ?) " +
-                "WHILE $depth <= 2";
+        String query = "select contact_list from patient where patient_mrn = ?";
             OResultSet rs = db.query(query, mrn);
             List<String> contactlist = new ArrayList<String>();
             while (rs.hasNext()) {
                 OResult item = rs.next();
-                contactlist.add(item.toString());
+                contactlist.add(item.toString().replace("\n", ""));
                 
               }
             rs.close();

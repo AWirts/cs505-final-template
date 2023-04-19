@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.LinkedHashMap;
@@ -162,7 +163,9 @@ public class API {
         try {
 
             //generate a response
-            List<String> contactlist = Launcher.getcontactlist(mrn);
+            List<String> contactlist = new ArrayList<String>();
+            contactlist = Launcher.getcontactlist(mrn);
+            System.out.println(contactlist);
             Map<String,List<String>> responseMap = new HashMap<>();
             responseMap.put("contactlist",contactlist);
             responseString = gson.toJson(responseMap);

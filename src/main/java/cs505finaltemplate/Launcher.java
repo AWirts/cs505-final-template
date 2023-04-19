@@ -108,8 +108,9 @@ public class Launcher {
     }
 
     public static List<String> getcontactlist(String mrn){
+        List<String> contactlist = new ArrayList<String>();
         graphDBEngine.db.activateOnCurrentThread();
-        List<String> contactlist = getcontactlist(mrn);
+        contactlist = graphDBEngine.getcontactlist(mrn);
         return contactlist;
     }
 
