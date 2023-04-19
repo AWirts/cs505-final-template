@@ -127,9 +127,7 @@ public class GraphDBEngine {
         result.setProperty("contact_list", contact_list);
         result.setProperty("event_list", event_list);
         for(String contact : contact_list){
-            String query = "TRAVERSE inE(), outE(), inV(), outV() " +
-                "FROM (select from patient where patient_mrn = ?) " +
-                "WHILE $depth <= 2";
+            String query = "select from patient where patient_mrn = ?";
             OResultSet rs = db.query(query, contact);
             while (rs.hasNext()) {
                 rs.next().getVertex().ifPresent(x->{
@@ -139,9 +137,7 @@ public class GraphDBEngine {
             rs.close();
         }
         for(String event : event_list){
-            String query = "TRAVERSE inE(), outE(), inV(), outV() " +
-                "FROM (select from patient where event_list contains ?) " +
-                "WHILE $depth <= 2";
+            String query = "select from patient where event_list contains ?";
             OResultSet rs = db.query(query, event);
             while (rs.hasNext()) {
                 rs.next().getVertex().ifPresent(x->{
@@ -194,18 +190,38 @@ public class GraphDBEngine {
         db.command(query);
 
     }
-
+    
     public List<String> getcontactlist(String mrn){
+        String query = "TRAVERSE inE('contact_with'), outE('contact_with'), inV(), outV() FROM (select from patient where patient_mrn = ?) WHILE $depth <= 2";
+        OResultSet rs = db.query(query, mrn);
+        List<String> contactlist = new ArrayList<String>();
+        while (rs.hasNext()) {
+            OResult item = rs.next();
+            contactlist.add(item.getProperty("patient_mrn").toString());
+        }
+
+        rs.close(); //REMEMBER TO ALWAYS CLOSE THE RESULT SET!!!
+        return contactlist;
+    } 
+
+   /*  public List<String> getcontactlist(String mrn){
         String query = "select contact_list from patient where patient_mrn = ?";
             OResultSet rs = db.query(query, mrn);
             List<String> contactlist = new ArrayList<String>();
+            String q = "";
             while (rs.hasNext()) {
                 OResult item = rs.next();
-                contactlist.add(item.toString().replace("\n", ""));
+                //String contact = item.getProperty("contact_list").toString().replaceAll("\\s+", "");
+                //contactlist.add(contact);
+                q=item.getProperty("contact_list").toString().replaceAll("\\s+", "").replace("[", "").replace("]","");
                 
               }
             rs.close();
+            String[] test = q.split(",");
+            for(int i=0;i<test.length;i++){
+                contactlist.add(test[i]);
+            }
             return contactlist;
-    }
+    } */
 
 }

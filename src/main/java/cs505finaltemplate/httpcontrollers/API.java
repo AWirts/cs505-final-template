@@ -165,7 +165,6 @@ public class API {
             //generate a response
             List<String> contactlist = new ArrayList<String>();
             contactlist = Launcher.getcontactlist(mrn);
-            System.out.println(contactlist);
             Map<String,List<String>> responseMap = new HashMap<>();
             responseMap.put("contactlist",contactlist);
             responseString = gson.toJson(responseMap);
@@ -181,6 +180,33 @@ public class API {
         }
         return Response.ok(responseString).header("Access-Control-Allow-Origin", "*").build();
     }
+/* 
+    @GET
+    @Path("/getpossiblecontacts/{mvn}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getpossiblecontacts(@PathParam("mvn")String mrn) {
+        String responseString = "{}";
+        try {
 
+            //generate a response
+            Map<String,List<String>> eventMap = new HashMap<>();
+            List<String> contactlist = new ArrayList<String>();
+            contactlist = Launcher.getpossiblecontactlist(mrn);
+            System.out.println(contactlist);
+            Map<String,Map<String,List<String>>> responseMap = new HashMap<>();
+            responseMap.put("contactlist",contactlist);
+            responseString = gson.toJson(responseMap);
+
+        } catch (Exception ex) {
+
+            StringWriter sw = new StringWriter();
+            ex.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            ex.printStackTrace();
+
+            return Response.status(500).entity(exceptionAsString).build();
+        }
+        return Response.ok(responseString).header("Access-Control-Allow-Origin", "*").build();
+    } */
 
 }
