@@ -214,7 +214,6 @@ public class GraphDBEngine {
                 }
                 if(!patient_list.isEmpty()){ 
                     contactlist.put(events[i],patient_list);
-                    System.out.println(contactlist);
                 }
                 rs.close();
                 i++;
@@ -223,7 +222,6 @@ public class GraphDBEngine {
         }
 
         rs2.close(); //REMEMBER TO ALWAYS CLOSE THE RESULT SET!!!
-        System.out.println("final:" + contactlist);
         return contactlist;
     } 
     
