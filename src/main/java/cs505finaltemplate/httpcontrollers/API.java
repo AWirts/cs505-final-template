@@ -191,7 +191,7 @@ public class API {
             //generate a response
             Map<String,List<String>> contactlist = new HashMap<>();
             contactlist = Launcher.getpossiblecontactlist(mrn);
-            System.out.println(contactlist);
+            //System.out.println(contactlist);
             Map<String,Map<String,List<String>>> responseMap = new HashMap<>();
             responseMap.put("contactlist",contactlist);
             responseString = gson.toJson(responseMap);
