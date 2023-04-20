@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.LinkedHashMap;
+
 public class GraphDBEngine {
 
 
@@ -225,6 +227,74 @@ public class GraphDBEngine {
         return contactlist;
     } 
     
-    
+    public Map<String,Double> getPatientStatus(){
+
+        String[] labels = {"in-patient_count", "in-patient_vax", "icu-patient_count", "icu_patient_vax", "patient_vent_count", "patient_vent_vax"};
+
+        HashMap<String,Double> patientStatus = new LinkedHashMap<String,Double>();
+
+        for(int i = 0; i < 3; i++){
+
+                String query = "SELECT COUNT() as count FROM hospital WHERE patient_status = ?";
+                OResultSet rs = db.query(query, String.valueOf(i+1));
+		double tot = 0.0;
+		if(rs.hasNext()){
+			tot = ((Long)(rs.next().getProperty("count"))).doubleValue();
+		}
+                patientStatus.put(labels[i*2], tot);
+                rs.close();
+
+                if(tot == 0){
+                        patientStatus.put(labels[i*2+1], 0.0);
+                }
+                else{
+                        query = "SELECT COUNT() as count FROM vax WHERE patient_mrn in (SELECT patient_mrn FROM hospital WHERE patient_status = ?)";
+                        rs = db.query(query, String.valueOf(i+1));
+			double vax = 0.0;
+			if(rs.hasNext()){
+				vax = ((Long)(rs.next().getProperty("count"))).doubleValue();
+			}
+                        patientStatus.put(labels[i*2+1], vax/tot);
+                        rs.close();
+                }
+        }
+
+        return patientStatus;
+    }
+
+    public Map<String,Double> getPatientStatusByHid(String hospital_id){
+
+        String[] labels = {"in-patient_count", "in-patient_vax", "icu-patient_count", "icu_patient_vax", "patient_vent_count", "patient_vent_vax"};
+
+        HashMap<String,Double> patientStatus = new LinkedHashMap<String,Double>();
+
+        for(int i = 0; i < 3; i++){
+
+                String query = "SELECT COUNT() as count FROM hospital WHERE hospital_id = ? and patient_status = ?";
+                OResultSet rs = db.query(query, Integer.parseInt(hospital_id), String.valueOf(i+1));
+		double tot = 0.0;
+                if(rs.hasNext()){
+                        tot = ((Long)(rs.next().getProperty("count"))).doubleValue();
+                }
+                patientStatus.put(labels[i*2],tot);
+                rs.close();
+
+		if(tot == 0){
+			patientStatus.put(labels[i*2+1], 0.0);
+		}
+		else{
+			query = "SELECT COUNT() as count FROM vax WHERE patient_mrn in (SELECT patient_mrn FROM hospital WHERE hospital_id = ? and patient_status = ?)";
+                	rs = db.query(query, Integer.parseInt(hospital_id), String.valueOf(i+1));
+			double vax = 0.0;
+                        if(rs.hasNext()){
+                                vax = ((Long)(rs.next().getProperty("count"))).doubleValue();
+                        }
+                	patientStatus.put(labels[i*2+1], vax/tot);
+                	rs.close();
+		}
+        }
+
+        return patientStatus;
+    }
 
 }

@@ -120,4 +120,16 @@ public class Launcher {
         return contactlist;
     }
 
+    public static Map<String,Double> getPatientStatus(){
+        Map<String,Double> patientStatus = new HashMap<>();
+        graphDBEngine.db.activateOnCurrentThread();
+        patientStatus = graphDBEngine.getPatientStatus();
+        return patientStatus;
+    }
+    public static Map<String,Double> getPatientStatusByHid(String hospital_id){
+        Map<String,Double> patientStatus = new HashMap<>();
+        graphDBEngine.db.activateOnCurrentThread();
+        patientStatus = graphDBEngine.getPatientStatusByHid(hospital_id);
+        return patientStatus;
+    }
 }

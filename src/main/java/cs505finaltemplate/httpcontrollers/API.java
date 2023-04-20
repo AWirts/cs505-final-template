@@ -206,6 +206,54 @@ public class API {
             return Response.status(500).entity(exceptionAsString).build();
         }
         return Response.ok(responseString).header("Access-Control-Allow-Origin", "*").build();
-    } 
+    }
+
+    @GET
+    @Path("/getpatientstatus/{hospital_id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getpatientstatusbyhid(@PathParam("hospital_id") String hospital_id) {
+        String responseString = "{}";
+        try {
+
+            //generate a response
+            Map<String,Double> responseMap = Launcher.getPatientStatusByHid(hospital_id);
+
+            responseString = gson.toJson(responseMap);
+
+        } catch (Exception ex) {
+
+            StringWriter sw = new StringWriter();
+            ex.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            ex.printStackTrace();
+
+            return Response.status(500).entity(exceptionAsString).build();
+        }
+        return Response.ok(responseString).header("Access-Control-Allow-Origin", "*").build();
+    }
+
+    @GET
+    @Path("/getpatientstatus/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getpatientstatus() {
+        String responseString = "{}";
+        try {
+
+            //generate a response
+            Map<String,Double> responseMap = Launcher.getPatientStatus();
+
+            responseString = gson.toJson(responseMap);
+
+        } catch (Exception ex) {
+
+            StringWriter sw = new StringWriter();
+            ex.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            ex.printStackTrace();
+
+            return Response.status(500).entity(exceptionAsString).build();
+        }
+        return Response.ok(responseString).header("Access-Control-Allow-Origin", "*").build();
+    }
 
 }
